@@ -28,16 +28,13 @@ class SimNet::Frame {
 		if $first {
 			my %visited{SimNet::Frame};
 			recursiveGet($slot, (self), %visited);
+		} elsif %.data{$slot}:exists {
+			["result", %.data{$slot}];
+		} elsif !%.data{"isa"}:exists {
+			[Nil];
 		} else {
-			%visited{self} = True;
-			if %.data{$slot}:exists {
-				["result", %.data{$slot}];
-			} elsif !%.data{"isa"}:exists {
-				[Nil];
-			} else {
-				["enqueue", %.data{"isa"}];
-			}
-		}
+			["enqueue", %.data{"isa"}];
+		}	
 	}
 
 	method put($key, $val, $overwrite=False) {
