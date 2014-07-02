@@ -6,6 +6,7 @@ use PokeEnv::Entity::Wall;
 use PokeEnv::Entity::Teleporter;
 use PokeEnv::Entity::Agent;
 use PokeEnv::Entity::RandomAgent;
+use PokeEnv::Entity::Goal;
 
 module PokeEnv::IO::WorldBuilder;
 

@@ -47,9 +47,18 @@ class PokeEnv::BoundedGrid {
 	method rem($loc) {
 		%.contents{$loc}:delete;
 	}
+	
+	multi method get($x, $y) {
+		my $loc = PokeEnv::Location.new(+$x, +$y, self, "N");
+		get($loc);
+	}
 
-	method get($loc) {
-		%.contents{$loc};
+	multi method get($loc) {
+		if %.contents{$loc}:exists {
+			%.contents{$loc};
+		} else {
+			Nil;
+		}
 	}
 
 	method isLegal($loc) {

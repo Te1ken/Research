@@ -1,0 +1,7 @@
+:0{}:	# null action #
+:1{isa=>,diff=>,sequence=>}:	# universal root #
+:2{isa=>|<1>|,does=>change_pos,sequence=>2}:	# move #
+:3{isa=>|<1>|,does=>create_sound,seq=>3}:	# speak #
+:4{isa=>|<1>|,does=>grasp,seq=>4}:	# grasp #
+:5{isa=>|<1>|,does=>propel,seq=>5}:	# propel #
+:6{isa=>|<1>|,does=>change_t,seq=>6}:	# turn #

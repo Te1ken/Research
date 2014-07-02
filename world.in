@@ -1,8 +1,4 @@
-LEVEL overworld 10 10
+LEVEL overworld 5 5
 LAYER overworld active
-ENTITY SimpleWall overworld active 2 3 S
-ENTITY SimpleWall overworld active 4 3 S
-ENTITY SimpleWall overworld active 3 2 S
-ENTITY Teleporter overworld active 3 4 S overworld,active,8,8,S
-AGENT Random overworld active 3 3 W
+ENTITY Goal overworld active 3 3 S
 

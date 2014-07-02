@@ -22,6 +22,10 @@ class PokeEnv::Entity::Entity {
 
 	}
 
+	method updateState($world) {
+
+	}
+
 	method step_on() {
 
 	}

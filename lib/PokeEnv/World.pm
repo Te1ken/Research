@@ -33,19 +33,35 @@ class PokeEnv::Level {
 }
 
 class PokeEnv::World {
+	has	$.active is rw;
 	has	%.levels;
 	has	$.level is rw;
 	has	@.agents;
+	has	@.entities;
 
 	method new() {
-		self.bless();
+		self.bless(:active(True));
 	}
 
 	method run() {
-		for @.agents -> $agent {
-			$agent.act;
+		$.active = True;
+		my $unpause = time + 2;
+		while $.active {
+			if time <= $unpause {
+				@.agents>>.act;
+				@.entities>>.updateState(self);
+				dump;
+				$unpause = time + 2;
+			}
 		}
 	}
+
+	method stop() {
+		$.active = False;
+	}
+
+	method register($entity) {
+		push @.entities, $entity;
 
 	method spawn_agent($agent) {
 		@.agents.push($agent);
