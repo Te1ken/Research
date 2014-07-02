@@ -4,7 +4,7 @@ use SimNet::Net;
 use SimNet::Frames;
 use PokeEnv::Entity::Agent;
 use PokeEnv::IO::WorldBuilder;
-use PokeEnv::Entity::Grid;
+use PokeEnv::Grid;
 
 my %verbFrames = loadFrames(open('frames/verbs.in').slurp);
 my $verbNetwork = SimNet::Network.new(%verbFrames);

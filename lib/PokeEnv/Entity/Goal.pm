@@ -3,25 +3,23 @@ use PokeEnv::Entity::Entity;
 
 class PokeEnv::Entity::Goal is PokeEnv::Entity::Entity {
 	has	$.activated is rw;
-	has	$!world is rw;
+	has	$.world is rw;
 	has	%.log;
 	method new($loc, $type, $id, $args, $world) {
 		my $worker = callsame;
-		$!world = $world;
-		$world.register(self);
-		for ($loc.x-1 .. $loc.x+1) -> $x {
-			for ($loc.y - 1 .. $loc.y + 1) -> $y {
-				%.log{[$x,$y]} = False;
-			}
-		}
+		$worker.world = $world;
+		$world.register($worker);
+		$worker.reset;
+		$worker;
 	}
 
 	method reset() {
-		for ($loc.x - 1 .. $loc.x + 1) -> $x {
-			for ($loc.y - 1 .. $loc.y + 1) -> $y {
+		for ($.loc.x - 1 .. $.loc.x + 1) -> $x {
+			for ($.loc.y - 1 .. $.loc.y + 1) -> $y {
 				%.log{[$x,$y]} = False;
 			}
 		}
+		%.log{"" ~ $.loc.x ~ " " ~ $.loc.y}:delete;
 	}
 
 	method interact($agent) {
@@ -48,7 +46,7 @@ class PokeEnv::Entity::Goal is PokeEnv::Entity::Entity {
 		}
 
 		if !($found) {
-			reset;
+			self.reset;
 		}
 
 		$found = True;

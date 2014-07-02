@@ -49,20 +49,21 @@ class PokeEnv::Entity::Agent is PokeEnv::Entity::Entity {
 }
 
 class PokeEnv::Entity::FrameAgent is PokeEnv::Entity::Agent {
-	has	$!verbnet;
-	has	$!nounnet;
-	has	$!age is rw;
+	has	$.verbnet;
+	has	$.nounnet;
+	has	$.age is rw;
 	has	@.memory;
 	has	@.todo;
 	
 	method new($verbs,$nouns,$loc,$type,$id,@args,$world) {
-		self.bless(:verbnet($verbs),:nounnet($nouns),:age(0));
-		callwith($loc,$type,$id,@args,$world);
+		my $ret = callwith($loc,$type,$id,@args.item,$world);
+		$ret.bless(:verbnet($verbs),:nounnet($nouns),:age(0));
 	}
 
 	method selectAction() {
 		if @.todo.elems ~~ 0 {
-			my $act = $!verbnet.master{2}.instantiate;
+			say $.verbnet.WHAT;
+			my $act = $.verbnet.master{2}.instantiate;
 			$act.set("x"=>1);
 			$act.defaultTo(0);
 			push @.todo, $act.distill;
@@ -71,20 +72,20 @@ class PokeEnv::Entity::FrameAgent is PokeEnv::Entity::Agent {
 	}
 
 	method act() {
-		my $action = selectAction;
+		my $action = self.selectAction;
 		push @.memory, $action;
 		$!age++;
 		say "Action: " ~ $action.id;
 		if $action.id ~~ 2 {
-			move;
+			self.move;
 		} elsif $action.id ~~ 3 {
-			speak;
+			self.speak;
 		} elsif $action.id ~~ 4 {
-			grasp;
+			self.grasp;
 		} elsif $action.id ~~ 5 {
-			propel;
+			self.propel;
 		} elsif $action.id ~~ 6 {
-			turn;
+			self.turn;
 		}
 	}
 }

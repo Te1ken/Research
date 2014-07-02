@@ -50,7 +50,7 @@ class PokeEnv::World {
 			if time <= $unpause {
 				@.agents>>.act;
 				@.entities>>.updateState(self);
-				dump;
+				self.dump;
 				$unpause = time + 2;
 			}
 		}
@@ -62,13 +62,14 @@ class PokeEnv::World {
 
 	method register($entity) {
 		push @.entities, $entity;
+	}
 
 	method spawn_agent($agent) {
 		@.agents.push($agent);
 	}
 
 	method switch_level($level_id) {
-		if (%.levels{$level_id}:exists) {
+		if %.levels{$level_id}:exists {
 			$.level = %.levels{$level_id};
 			$.level;
 		} else {

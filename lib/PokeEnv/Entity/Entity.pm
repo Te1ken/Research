@@ -6,7 +6,7 @@ class PokeEnv::Entity::Entity {
 	has	Int			$.id;
 	has				$.type;
 
-	method new($loc, $type, $id, @args, $world) {
+	method new($loc, $type, $id, @args = @(()), $world = Nil) {
 		self.bless(:$loc, :$type, :$id);
 	}
 	

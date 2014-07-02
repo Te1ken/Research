@@ -1,6 +1,6 @@
 use v6;
 
-module SimNet::Frames;
+#module SimNet::Frames;
 
 sub recursiveGet($slot, @queue, %visited) {
 	if @queue.elems > 0 {
@@ -24,12 +24,14 @@ sub recursiveGet($slot, @queue, %visited) {
 	}
 }
 
-class SimNet::Frame { ... };
+class SimNet::Frame { ... }
 
 class SimNet::FrameInstance is SimNet::Frame {
 	has	@.params;
 	method new(%data, $id) {
-		self.bless(:%data, :$id, :params(self.findParams));
+		my $worker = self.bless(:%data, :$id);
+		$worker.findParams;
+		$worker;
 	}
 
 	method distill() {
@@ -72,17 +74,17 @@ class SimNet::FrameInstance is SimNet::Frame {
 				push @list, $key;
 			}
 		}
-		@list;
+		push @.params, @list;
 	}
 }
 
 class SimNet::Frame {
-	has	%.frames;
+#	has	%.frames;
 	has	%.data;
 	has	$.id is rw;
 
-	method new(%frames) {
-		self.bless(:%frames);
+	method new() {
+		self.bless();
 	}
 
 	method clear() {
@@ -150,7 +152,7 @@ sub loadFrames($input) is export {
 	my %framedex;
 	my @unsatisfied;
 	for @list {
-		my $frame = SimNet::Frame.new(%framedex);
+		my $frame = SimNet::Frame.new();
 		my ($id, @reqs) = $frame.fromString($_);
 		%framedex{$id} = $frame;
 		if @reqs[0]:exists {
