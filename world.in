@@ -1,4 +1,4 @@
-LEVEL overworld 5 5
+LEVEL overworld 4 4
 LAYER overworld active
-ENTITY Goal overworld active 3 3 S
+ENTITY Goal overworld active 2 2 S
 

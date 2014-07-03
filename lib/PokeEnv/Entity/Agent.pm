@@ -11,7 +11,6 @@ class PokeEnv::Entity::Agent is PokeEnv::Entity::Entity {
 	method move() {
 		my $targ = $.loc.adjacent($.loc.dir);
 		my $grid = $.loc.grid;
-		say $grid.isLegal($targ);
 		if $grid.isLegal($targ) && $grid.isOpen($targ) {
 			self.move_to($targ);
 			True;
@@ -39,7 +38,7 @@ class PokeEnv::Entity::Agent is PokeEnv::Entity::Entity {
 		my $grid = $.loc.grid;
 		my $ent = $grid.get($targ);
 		if $ent.defined {
-			$ent.interact;
+			$ent.interact(self);
 		} 
 	}
 
@@ -49,22 +48,31 @@ class PokeEnv::Entity::Agent is PokeEnv::Entity::Entity {
 }
 
 class PokeEnv::Entity::FrameAgent is PokeEnv::Entity::Agent {
-	has	$.verbnet;
-	has	$.nounnet;
+	has	$.verbnet is rw;
+	has	$.nounnet is rw;
 	has	$.age is rw;
 	has	@.memory;
 	has	@.todo;
 	
 	method new($verbs,$nouns,$loc,$type,$id,@args,$world) {
-		my $ret = callwith($loc,$type,$id,@args.item,$world);
-		$ret.bless(:verbnet($verbs),:nounnet($nouns),:age(0));
+		my $ret = callwith($loc,$type,$id,@(()).item,$world);
+		if @args.elems > 0 {
+			for @args {
+				my $act = $verbs.master{$_}.instantiate;
+				$act.defaultTo(0);
+				push $ret.todo, $act.distill;
+			}
+		}
+		$ret.verbnet = $verbs;
+		$ret.nounnet = $nouns;
+		$ret;
+		#$ret.bless(:verbnet($verbs),:nounnet($nouns),:age(0));
 	}
 
 	method selectAction() {
 		if @.todo.elems ~~ 0 {
-			say $.verbnet.WHAT;
-			my $act = $.verbnet.master{2}.instantiate;
-			$act.set("x"=>1);
+			my $fetch = (2..6).roll;
+			my $act = $.verbnet.master{$fetch}.instantiate;
 			$act.defaultTo(0);
 			push @.todo, $act.distill;
 		}
@@ -74,8 +82,7 @@ class PokeEnv::Entity::FrameAgent is PokeEnv::Entity::Agent {
 	method act() {
 		my $action = self.selectAction;
 		push @.memory, $action;
-		$!age++;
-		say "Action: " ~ $action.id;
+		$.age++;
 		if $action.id ~~ 2 {
 			self.move;
 		} elsif $action.id ~~ 3 {

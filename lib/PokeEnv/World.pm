@@ -34,6 +34,7 @@ class PokeEnv::Level {
 
 class PokeEnv::World {
 	has	$.active is rw;
+	has	$.exitcode is rw;
 	has	%.levels;
 	has	$.level is rw;
 	has	@.agents;
@@ -43,21 +44,27 @@ class PokeEnv::World {
 		self.bless(:active(True));
 	}
 
-	method run() {
+	method run($ticks = Inf) {
 		$.active = True;
-		my $unpause = time + 2;
-		while $.active {
-			if time <= $unpause {
+		my $unpause = time - 2;
+		my $count = 0;
+		while $.active && $count < $ticks {
+			if time >= $unpause {
 				@.agents>>.act;
 				@.entities>>.updateState(self);
-				self.dump;
-				$unpause = time + 2;
+				#self.dump;
+				$unpause = time - 2;
+				$count++;
 			}
+		}
+		if $.active {
+			self.stop("timeout");
 		}
 	}
 
-	method stop() {
+	method stop($reason) {
 		$.active = False;
+		$.exitcode = $reason;
 	}
 
 	method register($entity) {

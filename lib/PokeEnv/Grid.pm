@@ -9,7 +9,7 @@ class PokeEnv::Location {
 	has		$.grid;
 	
 	method new($x, $y, $grid, $dir) {
-		self.bless(:$x, :$y, :$grid);
+		self.bless(:$x, :$y, :$grid, :$dir);
 	}
 
 	method adjacent($dir) {
@@ -40,7 +40,6 @@ class PokeEnv::BoundedGrid {
 	}
 
 	method put($loc, $ent) {
-		say $loc.WHICH;
 		%.contents{$loc} = $ent;
 	}
 	
@@ -50,7 +49,7 @@ class PokeEnv::BoundedGrid {
 	
 	multi method get($x, $y) {
 		my $loc = PokeEnv::Location.new(+$x, +$y, self, "N");
-		get($loc);
+		self.get($loc);
 	}
 
 	multi method get($loc) {

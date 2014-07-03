@@ -11,13 +11,20 @@ my $verbNetwork = SimNet::Network.new(%verbFrames);
 my %nounFrames = loadFrames(open('frames/nouns.in').slurp);
 my $nounNetwork = SimNet::Network.new(%nounFrames);
 
-my $world = import("world.in");
-my $grid = $world.getLevel("overworld").getLayer("active");
-my $loc = PokeEnv::Location.new(1, 1, $grid, "S");
-my $frameagent = PokeEnv::Entity::FrameAgent.new($verbNetwork, $nounNetwork, $loc, "FrameAgent", 15, @(()), $world);
-$grid.put($loc, $frameagent);
-$world.spawn_agent($frameagent);
+my %runs;
 
-$world.run;
+for 0..^10 {
+	my $world = import("world.in");
+	my $grid = $world.getLevel("overworld").getLayer("active");
+	my $loc = PokeEnv::Location.new(1, 1, $grid, "S");
+	my $frameagent = PokeEnv::Entity::FrameAgent.new($verbNetwork, $nounNetwork, $loc, "FrameAgent", 15, @(()), $world);
+	$grid.put($loc, $frameagent);
+	$world.spawn_agent($frameagent);
 
+	$world.run;
+
+	%runs{$_} = $frameagent.memory>>.id;
+}
+
+say %runs;
 # vim: ft=perl6

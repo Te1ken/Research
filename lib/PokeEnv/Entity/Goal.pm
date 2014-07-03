@@ -10,6 +10,7 @@ class PokeEnv::Entity::Goal is PokeEnv::Entity::Entity {
 		$worker.world = $world;
 		$world.register($worker);
 		$worker.reset;
+		$worker.activated = False;
 		$worker;
 	}
 
@@ -25,7 +26,8 @@ class PokeEnv::Entity::Goal is PokeEnv::Entity::Entity {
 	method interact($agent) {
 		if $.activated {
 			say "MISSION ACCOMPLISHED!";
-			$!world.stop;
+			$!world.stop("success");
+			#$agent.memory>>.id.say;
 		}
 	}
 

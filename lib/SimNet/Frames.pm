@@ -24,67 +24,15 @@ sub recursiveGet($slot, @queue, %visited) {
 	}
 }
 
-class SimNet::Frame { ... }
-
-class SimNet::FrameInstance is SimNet::Frame {
-	has	@.params;
-	method new(%data, $id) {
-		my $worker = self.bless(:%data, :$id);
-		$worker.findParams;
-		$worker;
-	}
-
-	method distill() {
-		my @seq = ();
-		if %.data{"sequence"}.elems ~~ 1 {
-			push @seq, self;
-		} else {
-			for %.data{"sequence"} {
-				my $instance = %.frames{$_}.instantiate;
-				push @seq, $instance.distill;
-			}
-		}
-		@seq;
-	}
-
-	method set($pair) {
-		%.data{$pair.key} = $pair.value;
-		my $index = 0;
-		my $found = False;
-		while $index < @.params.elems && !($found) {
-			if @.params[$index] ~~ $pair.key {
-				$found = True;
-				@.params.splice($index,1);
-			}
-			$index++;
-		}
-		say "Should have no $pair :" ~ @.params;
-	}
-
-	method defaultTo($value) {
-		for @.params -> $key {
-			%.data{$key} = $value;
-		}
-	}
-
-	method findParams() {
-		my @list = ();
-		for %.data.keys -> $key {
-			if %.data{$key}.elems == 0 {
-				push @list, $key;
-			}
-		}
-		push @.params, @list;
-	}
-}
+class SimNet::FrameInstance { ... }
 
 class SimNet::Frame {
-#	has	%.frames;
+	has	%.frames;
 	has	%.data;
 	has	$.id is rw;
 
-	method new() {
-		self.bless();
+	method new(%frames) {
+		self.bless(:%frames);
 	}
 
 	method clear() {
@@ -92,7 +40,7 @@ class SimNet::Frame {
 	}
 
 	method instantiate() {
-		my $instance = SimNet::FrameInstance.new(%.data, $.id);
+		SimNet::FrameInstance.new(%.data, $.id);
 	}
 
 	method get($slot, $first=True) {
@@ -145,6 +93,62 @@ class SimNet::Frame {
 	}
 }
 
+class SimNet::FrameInstance is SimNet::Frame {
+	has	@.params;
+	method new(%data, $id) {
+		my $worker = self.bless(:%data, :$id);
+		$worker.findParams;
+		$worker;
+	}
+
+	method distill() {
+		my @seq = ();
+		if $.id == 0 || %.data{"sequence"}.elems ~~ 1 {
+			push @seq, self;
+		} else {
+			for %.data{"sequence"} {
+				my $instance = %.frames{$_}.instantiate;
+				push @seq, $instance.distill;
+			}
+		}
+		@seq;
+	}
+
+	method set($pair) {
+		%.data{$pair.key} = $pair.value;
+		my $index = 0;
+		my $found = False;
+		while $index < @.params.elems && !($found) {
+			if @.params[$index] ~~ $pair.key {
+				$found = True;
+				@.params.splice($index,1);
+			}
+			$index++;
+		}
+		say "Should have no $pair :" ~ @.params;
+	}
+
+	method defaultTo($value) {
+		for @.params -> $key {
+			%.data{$key} = $value;
+		}
+	}
+
+	method findParams() {
+		my @list = ();
+		for %.data.keys -> $key {
+			if %.data{$key}.elems == 0 {
+				push @list, $key;
+			}
+		}
+		push @.params, @list;
+	}
+
+	method WHICH() {
+		"SimNet::FrameInstance|$.id";
+	}
+}
+
 sub loadFrames($input) is export {
 	my $str = $input.subst(rx/'#'.*?'#'|\r?\n/, ' ', :g);
 	$str = $str.subst(rx/\s+/, ' ', :g).trim-trailing.chomp;
@@ -152,7 +156,7 @@ sub loadFrames($input) is export {
 	my %framedex;
 	my @unsatisfied;
 	for @list {
-		my $frame = SimNet::Frame.new();
+		my $frame = SimNet::Frame.new(%framedex);
 		my ($id, @reqs) = $frame.fromString($_);
 		%framedex{$id} = $frame;
 		if @reqs[0]:exists {
