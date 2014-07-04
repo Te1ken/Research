@@ -29,23 +29,25 @@ sub testRun(@list is copy) {
 }
 
 sub pick_prune(@list is copy, $l, $pos) {
+
 	if $l < 1 {
 		return @list;
-	}
-	say "Data: $l $pos " ~ @list.elems;
-	my @replacement;
-	for 0..^$l {
-		push @replacement, 0;
-	}
-	my @pulled = @list.splice($pos, $l, @replacement);
-	if testRun(@list) ~~ "success" {
-		@list.splice($pos, $l);
 	} else {
-		for 0..^@pulled.elems {
-			@list[$_ + $pos] = @pulled[$_];
+		say "Data: $l $pos " ~ @list.elems;
+		my @replacement;
+		for 0..^$l {
+			push @replacement, 0;
+		}
+		my @pulled = @list.splice($pos, $l, @replacement);
+		if testRun(@list) ~~ "success" {
+			@list.splice($pos, $l);
+			$pos -= $l;
+		} else {
+			for 0..^@pulled.elems {
+				@list[$_ + $pos] = @pulled[$_];
+			}
 		}
 	}
-
 	if $l >= @list.elems {
 		pick_prune(@list, floor(@list.elems / 2), 0);
 	} elsif ($pos + $l) + $l >= @list.elems {
