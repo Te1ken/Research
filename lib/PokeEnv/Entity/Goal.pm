@@ -4,7 +4,7 @@ use PokeEnv::Entity::Entity;
 class PokeEnv::Entity::Goal is PokeEnv::Entity::Entity {
 	has	$.activated is rw;
 	has	$.world is rw;
-	has	%.log;
+	has	@.log;
 	method new($loc, $type, $id, $args, $world) {
 		my $worker = callsame;
 		$worker.world = $world;
@@ -15,12 +15,10 @@ class PokeEnv::Entity::Goal is PokeEnv::Entity::Entity {
 	}
 
 	method reset() {
-		for ($.loc.x - 1 .. $.loc.x + 1) -> $x {
-			for ($.loc.y - 1 .. $.loc.y + 1) -> $y {
-				%.log{[$x,$y]} = False;
-			}
+		for 0..^@.log.elems {
+			@.log[$_] = False;
 		}
-		%.log{"" ~ $.loc.x ~ " " ~ $.loc.y}:delete;
+		@.log[4] = True;
 	}
 
 	method interact($agent) {
@@ -35,26 +33,34 @@ class PokeEnv::Entity::Goal is PokeEnv::Entity::Entity {
 		if $.activated {
 			return;
 		}
-
+		
 		my $found = False;
-		for %.log.keys {
-			my ($x, $y) = $_.split(' ');
-			my $grid = $.loc.grid;
-			my $check = $grid.get($x, $y);
-			if PokeEnv::Entity::Agent.ACCEPTS($check) {
-				$found = True;
-				%.log{$_} = True;
+#		say "1: " ~ now;
+		for 0..^@.log.elems {
+			my $x = floor($_/3);
+			my $y = floor($_%3);
+#			say "$x $y";
+			if !($x == $.loc.x && $y == $.loc.y) {
+				my $grid = $.loc.grid; # 15
+				my $check = $grid.get($x, $y); # 27
+				if PokeEnv::Entity::Agent.ACCEPTS($check) { # 18
+					$found = True;
+					@.log[$_] = True;
+				}
 			}
 		}
+#		say "2: " ~ now;
 
 		if !($found) {
 			self.reset;
+			return;
 		}
 
 		$found = True;
-		for %.log.values {
+		for @.log {
 			if !($_) {
 				$found = False;
+				return;
 			}
 		}
 		

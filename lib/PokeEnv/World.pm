@@ -46,16 +46,16 @@ class PokeEnv::World {
 
 	method run($ticks = Inf) {
 		$.active = True;
-		my $unpause = time - 2;
+#		my $unpause = time - 2;
 		my $count = 0;
 		while $.active && $count < $ticks {
-			if time >= $unpause {
+#			if time >= $unpause {
 				@.agents>>.act;
 				@.entities>>.updateState(self);
 				#self.dump;
-				$unpause = time - 2;
+#				$unpause = time - 2;
 				$count++;
-			}
+#			}
 		}
 		if $.active {
 			self.stop("timeout");

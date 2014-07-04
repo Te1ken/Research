@@ -1,6 +1,6 @@
 use v6;
 
-my %directions = { 'N' => [0, -1], 'E' => [1, 0], 'S' => [0, 1], 'W' => [-1, 0] };
+my %directions = 'N' => [0, -1], 'E' => [1, 0], 'S' => [0, 1], 'W' => [-1, 0];
 
 class PokeEnv::Location {
 	has	Int	$.x;
