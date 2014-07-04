@@ -14,7 +14,7 @@ my $nounNetwork = SimNet::Network.new(%nounFrames);
 
 my $count = 0;
 
-sub testRun(@list is rw) {
+sub testRun(@list is copy) {
 	$count++;
 	say $count ~ ": " ~ now ~ " (" ~ @list.elems ~ ")";
 	my $world = import("world.in");
@@ -29,7 +29,7 @@ sub testRun(@list is rw) {
 	$world.exitcode;
 }
 
-sub pick_prune(@list is rw, $l, $pos) {
+sub pick_prune(@list is copy, $l, $pos is copy) {
 
 	if $l < 1 {
 		return @list;
@@ -62,8 +62,9 @@ sub pick_prune(@list is rw, $l, $pos) {
 #my %hash = EVAL($str);
 my %hash = getTestHash;
 
-#testRun(%hash{0});
-
+say "Test run: ";
+testRun(%hash{0});
+say "Real: ";
 #for %hash.keys {
 #	say %hash{$_}.list.elems;
 #}

@@ -37,8 +37,8 @@ class PokeEnv::Entity::Goal is PokeEnv::Entity::Entity {
 		my $found = False;
 #		say "1: " ~ now;
 		for 0..^@.log.elems {
-			my $x = floor($_/3);
-			my $y = floor($_%3);
+			my $x = $.loc.x + 1 - floor($_/3);
+			my $y = $.loc.y + 1 - floor($_%3);
 #			say "$x $y";
 			if !($x == $.loc.x && $y == $.loc.y) {
 				my $grid = $.loc.grid; # 15
