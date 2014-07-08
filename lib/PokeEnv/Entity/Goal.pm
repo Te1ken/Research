@@ -9,6 +9,9 @@ class PokeEnv::Entity::Goal is PokeEnv::Entity::Entity {
 		my $worker = callsame;
 		$worker.world = $world;
 		$world.register($worker);
+		for 0..^9 {
+			push $worker.log, False;
+		}
 		$worker.reset;
 		$worker.activated = False;
 		$worker;
@@ -43,7 +46,7 @@ class PokeEnv::Entity::Goal is PokeEnv::Entity::Entity {
 			if !($x == $.loc.x && $y == $.loc.y) {
 				my $grid = $.loc.grid; # 15
 				my $check = $grid.get($x, $y); # 27
-				if PokeEnv::Entity::Agent.ACCEPTS($check) { # 18
+				if $check ~~ PokeEnv::Entity::Agent { # 18
 					$found = True;
 					@.log[$_] = True;
 				}

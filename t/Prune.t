@@ -5,29 +5,13 @@ use SimNet::Frames;
 use PokeEnv::Entity::Agent;
 use PokeEnv::IO::WorldBuilder;
 use PokeEnv::Grid;
+use TestUtils::Utils;
 use TestData;
 
 my %verbFrames = loadFrames(open('frames/verbs.in').slurp);
 my $verbNetwork = SimNet::Network.new(%verbFrames);
 my %nounFrames = loadFrames(open('frames/nouns.in').slurp);
 my $nounNetwork = SimNet::Network.new(%nounFrames);
-
-my $count = 0;
-
-sub testRun(@list is copy) {
-	$count++;
-	say $count ~ ": " ~ now ~ " (" ~ @list.elems ~ ")";
-	my $world = import("world.in");
-	my $grid = $world.getLevel("overworld").getLayer("active");
-	my $loc = PokeEnv::Location.new(1, 1, $grid, "S");
-	my $frameagent = PokeEnv::Entity::FrameAgent.new($verbNetwork, $nounNetwork, $loc, "FrameAgent", 15, @list, $world);
-	$grid.put($loc, $frameagent);
-	$world.spawn_agent($frameagent);
-
-	$world.run(@list.elems);
-	say $world.exitcode;
-	$world.exitcode;
-}
 
 sub pick_prune(@list is copy, $l, $pos is copy) {
 
@@ -40,7 +24,7 @@ sub pick_prune(@list is copy, $l, $pos is copy) {
 			push @replacement, 0;
 		}
 		my @pulled = @list.splice($pos, $l, @replacement);
-		if testRun(@list) ~~ "success" {
+		if testRun(@list, $verbNetwork, $nounNetwork) ~~ "success" {
 			@list.splice($pos, $l);
 			$pos -= $l;
 		} else {
@@ -63,7 +47,7 @@ sub pick_prune(@list is copy, $l, $pos is copy) {
 my %hash = getTestHash;
 
 say "Test run: ";
-testRun(%hash{0});
+testRun(%hash{0}, $verbNetwork, $nounNetwork);
 say "Real: ";
 #for %hash.keys {
 #	say %hash{$_}.list.elems;
@@ -71,11 +55,11 @@ say "Real: ";
 
 for %hash.keys -> $rid {
 #say pick_prune(%hash{1}.list);
-	$count = 0;
+#	$count = 0;
 	say "Sequence $rid";
 	%hash{$rid} = pick_prune(%hash{$rid}.list, %hash{$rid}.list.elems - 1, 0);
 }
 
-#say %hash;
+say %hash;
 
 # vim: ft=perl6
