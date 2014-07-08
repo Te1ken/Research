@@ -56,16 +56,18 @@ sub import($f) is export {
 	my $entCount = 0;
 	for @lines -> $l {
 		my @decomp = $l.words;
-		if @decomp[0] eq "LEVEL" {
-			addLevel(@decomp, $world);
-		} elsif @decomp[0] eq "LAYER" {
-			addLayer(@decomp, $world);
-		} elsif @decomp[0] eq "ENTITY" {
-			addEntity(@decomp, $world, $entCount);
-			$entCount++;
-		} elsif @decomp[0] eq "AGENT" {
-			addAgent(@decomp, $world, $entCount);
-			$entCount++;
+		if @decomp.elems > 0 {
+			if @decomp[0] eq "LEVEL" {
+				addLevel(@decomp, $world);
+			} elsif @decomp[0] eq "LAYER" {
+				addLayer(@decomp, $world);
+			} elsif @decomp[0] eq "ENTITY" {
+				addEntity(@decomp, $world, $entCount);
+				$entCount++;
+			} elsif @decomp[0] eq "AGENT" {
+				addAgent(@decomp, $world, $entCount);
+				$entCount++;
+			}
 		}
 	}
 	$world;

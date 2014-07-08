@@ -11,7 +11,6 @@ sub testRun(@list is copy, $verbs is copy, $nouns is copy, $print = False) is ex
 	my $frameagent = PokeEnv::Entity::FrameAgent.new($verbs, $nouns, $loc, "FrameAgent", 15, @list, $world);
 	$grid.put($loc, $frameagent);
 	$world.spawn_agent($frameagent);
-	
 	$world.run(:ticks(@list.elems), :dump($print));
 	say $world.exitcode;
 	$world.exitcode;

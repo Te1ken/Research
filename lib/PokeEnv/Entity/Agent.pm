@@ -73,8 +73,9 @@ class PokeEnv::Entity::FrameAgent is PokeEnv::Entity::Agent {
 		if @.todo.elems ~~ 0 {
 			my $fetch = (2..6).roll;
 			my $act = $.verbnet.master{$fetch}.instantiate;
-			$act.defaultTo(0);
-			push @.todo, $act.distill;
+			#$act.defaultTo(0);
+			#push @.todo, $act.distill;
+			push @.todo, $act.id;
 		}
 		@.todo.shift;
 	}

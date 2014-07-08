@@ -9,11 +9,11 @@ use TestUtils::Utils;
 use TestData;
 
 #my %verbFrames = loadFrames(open('frames/verbs.in').slurp);
-my $verbNetwork = SimNet::Network.new('frames/verbs.in');
+#my $verbNetwork = SimNet::Network.new('frames/verbs.in');
 #my %nounFrames = loadFrames(open('frames/nouns.in').slurp);
-my $nounNetwork = SimNet::Network.new('frames/nouns.in');
+#my $nounNetwork = SimNet::Network.new('frames/nouns.in');
 
-sub pick_prune(@list is copy, $l, $pos is copy) {
+sub pick_prune(@list is copy, $l, $pos is copy, $verbNetwork, $nounNetwork) {
 
 	if $l < 1 {
 		return @list;
@@ -46,8 +46,8 @@ sub pick_prune(@list is copy, $l, $pos is copy) {
 #my %hash = EVAL($str);
 my %hash = getTestHash;
 
-say "Test run: ";
-testRun(%hash{0}, $verbNetwork, $nounNetwork);
+#say "Test run: ";
+#testRun(%hash{0}, $verbNetwork, $nounNetwork);
 say "Real: ";
 #for %hash.keys {
 #	say %hash{$_}.list.elems;
@@ -57,7 +57,9 @@ for %hash.keys -> $rid {
 #say pick_prune(%hash{1}.list);
 #	$count = 0;
 	say "Sequence $rid";
-	%hash{$rid} = pick_prune(%hash{$rid}.list, %hash{$rid}.list.elems - 1, 0);
+	my $verbNetwork = SimNet::Network.new('frames/verbs.in');
+	my $nounNetwork = SimNet::Network.new('frames/nouns.in');
+	%hash{$rid} = pick_prune(%hash{$rid}.list, %hash{$rid}.list.elems - 1, 0, $verbNetwork, $nounNetwork);
 }
 
 say %hash;

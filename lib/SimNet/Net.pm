@@ -4,12 +4,17 @@ use SimNet::Frames;
 module SimNet::Net;
 
 class SimNet::Network {
-	has 	%.master;
+	has 	%.master is rw;
 	has	$!MAX_DIFF = 2;
-	method new(%master) {
-		my $ret = self.bless(:%master);
-		$ret.buildNet;
+	method new($path) {
+		my $ret = self.bless();
+		$ret.load($path);
 		$ret;
+	}
+
+	method load($path) {
+		%.master = loadFrames(open($path).slurp, self);
+		self.buildNet;
 	}
 
 	method buildNet() {

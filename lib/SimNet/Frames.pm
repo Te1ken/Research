@@ -27,12 +27,12 @@ sub recursiveGet($slot, @queue, %visited) {
 class SimNet::FrameInstance { ... }
 
 class SimNet::Frame {
-	has	%.frames;
+	has	$.net;
 	has	%.data;
 	has	$.id is rw;
 
-	method new(%frames) {
-		self.bless(:%frames);
+	method new($net) {
+		self.bless(:$net);
 	}
 
 	method clear() {
@@ -40,7 +40,7 @@ class SimNet::Frame {
 	}
 
 	method instantiate() {
-		SimNet::FrameInstance.new(%.data, $.id);
+		SimNet::FrameInstance.new(%.data, $.id, $.net);
 	}
 
 	method get($slot, $first=True) {
@@ -60,7 +60,7 @@ class SimNet::Frame {
 		if !(%.data{$key}:exists) || $overwrite {
 			%.data{$key} = @(());
 		}
-		if !($val.WHICH.Str ~~ m/^'Str|'/ && $val.chars == 0) {
+		if !($val ~~ Str && $val.chars == 0) {
 			push %.data{$key}, $val;
 		} 
 	}
@@ -95,8 +95,8 @@ class SimNet::Frame {
 
 class SimNet::FrameInstance is SimNet::Frame {
 	has	@.params;
-	method new(%data, $id) {
-		my $worker = self.bless(:%data, :$id);
+	method new(%data is copy, $id, $net) {
+		my $worker = self.bless(:%data, :$id, :$net);
 		$worker.findParams;
 		$worker;
 	}
@@ -106,8 +106,9 @@ class SimNet::FrameInstance is SimNet::Frame {
 		if $.id == 0 || %.data{"sequence"}.elems ~~ 1 {
 			push @seq, self;
 		} else {
+			say "Seems to be actually trying to distill.  Aight.";
 			for %.data{"sequence"} {
-				my $instance = %.frames{$_}.instantiate;
+				my $instance = $.net.master{$_}.instantiate;
 				push @seq, $instance.distill;
 			}
 		}
@@ -149,14 +150,14 @@ class SimNet::FrameInstance is SimNet::Frame {
 	}
 }
 
-sub loadFrames($input) is export {
+sub loadFrames($input, $net) is export {
 	my $str = $input.subst(rx/'#'.*?'#'|\r?\n/, ' ', :g);
 	$str = $str.subst(rx/\s+/, ' ', :g).trim-trailing.chomp;
 	my @list = $str.split(' ');
 	my %framedex;
 	my @unsatisfied;
 	for @list {
-		my $frame = SimNet::Frame.new(%framedex);
+		my $frame = SimNet::Frame.new($net);
 		my ($id, @reqs) = $frame.fromString($_);
 		%framedex{$id} = $frame;
 		if @reqs[0]:exists {
