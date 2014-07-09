@@ -34,11 +34,11 @@ sub pick_prune(@list is copy, $l, $pos is copy, $verbNetwork, $nounNetwork) {
 		}
 	}
 	if $l >= @list.elems {
-		pick_prune(@list, floor(@list.elems / 2), 0);
+		pick_prune(@list, floor(@list.elems / 2), 0, $verbNetwork, $nounNetwork);
 	} elsif ($pos + $l) + $l >= @list.elems {
-		pick_prune(@list, floor($l / 2), 0);
+		pick_prune(@list, floor($l / 2), 0, $verbNetwork, $nounNetwork);
 	} else {
-		pick_prune(@list, $l, $pos + $l);
+		pick_prune(@list, $l, $pos + $l, $verbNetwork, $nounNetwork);
 	}
 }
 
