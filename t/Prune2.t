@@ -53,14 +53,17 @@ say "Real: ";
 #	say %hash{$_}.list.elems;
 #}
 
-for %hash.keys -> $rid {
+#for %hash.keys -> $rid {
 #say pick_prune(%hash{1}.list);
 #	$count = 0;
-	say "Sequence $rid";
+#	say "Sequence $rid";
 	my $verbNetwork = SimNet::Network.new('frames/verbs.in');
 	my $nounNetwork = SimNet::Network.new('frames/nouns.in');
-	%hash{$rid} = pick_prune(%hash{$rid}.list, %hash{$rid}.list.elems - 1, 0, $verbNetwork, $nounNetwork);
-}
+#	%hash{$rid} = 
+	pick_prune(%hash{0}.list, %hash{0}.list.elems - 1, 0, $verbNetwork, $nounNetwork);
+	pick_prune(%hash{1}.list, %hash{1}.list.elems - 1, 0, $verbNetwork, $nounNetwork);
+	pick_prune(%hash{2}.list, %hash{2}.list.elems - 1, 0, $verbNetwork, $nounNetwork);
+#}
 
 say %hash;
 
