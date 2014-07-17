@@ -1,4 +1,6 @@
 :0{isa=>,diff=>}: # universal root #
-:1{isa=>|<0>|,color=>,shape=>,phase=>solid,phase=>liquid,age=>,opacity=>,weight=>,height=>,width=>,depth=>,material=>,shape=>,texture=>}: :2{isa=>|<1>|,color=>blue,phase=>liquid,opacity=>clear}: # Object #
+:1{isa=>|<0>|,color=>,shape=>,phase=>solid,phase=>liquid,age=>,opacity=>,weight=>,height=>,width=>,depth=>,material=>,shape=>,texture=>}: 
+:2{isa=>|<1>|,color=>blue,phase=>liquid,opacity=>clear}: # Object #
 :3{isa=>|<2>|,color=>blue,material=>h2o,phase=>liquid}: # Water #
 :4{isa=>|<2>|,color=>red,material=>rock,phase=>liquid}: # Lava #
+:5{isa=>|<0>|,finish=>,changeHealth=>,changeX=>,changeY=>,changeZ=>retrieveData=>,changeInventory=>,changeOtherState=>,changeDir=>}: # Result #

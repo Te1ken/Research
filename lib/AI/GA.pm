@@ -33,6 +33,8 @@ sub toChromosome(@list) {
 		}
 		push @ret, @gene.item;
 	}
+	say @list;
+	say @ret;
 	@ret;
 }
 
@@ -97,18 +99,18 @@ sub cross2(@p1, @p2) {
 # splice anywhere (one splice per individual)
 sub cross3(@p1 is copy, @p2 is copy) {
 	my $division = (0..@p1.elems).roll;
-	say "1";
-	say "p1: " ~ @p1.elems;
+#	say "1";
+#	say "p1: " ~ @p1.elems;
 	my @ret = @p1.splice(0, $division);
-	say "2";
-	say "p2: " ~ @p2.elems;
-	say "div: $division";
+#	say "2";
+#	say "p2: " ~ @p2.elems;
+#	say "div: $division";
 	push @ret, @p2.splice($division, @p2.elems - $division);
-	say "3";
+#	say "3";
 	for ^(@ret.elems % 4) {
 		@ret.splice($_, 4, (@ret[$_..^$_+4]).item);
 	}
-	say "4";
+#	say "4";
 	@ret;
 }
 
@@ -124,16 +126,17 @@ sub mutate(@individual is rw) {
 sub generation(@population) {
 	my @gen;
 	my ($max, @fitnesses) = getFitnesses(@population);
+	my @crosses = &cross1, &cross2, &cross3;
 	for ^@population.elems {
 		my ($p1, $p2) = select(@population, $max, @fitnesses);
 #		¿(&cross1, &cross2, &cross3), @population[$p1].item, @population[$p2].item¿;
-		push @gen, mutate(cross3(@population[$p1], @population[$p2]));
+		push @gen, mutate((@crosses.roll)(@population[$p1], @population[$p2]));
 	}
 	@gen;
 }
 
 sub expand($len, @list is copy) {
-	for ^$len {
+	for @list.elems..^$len {
 		push @list, 0;
 	}
 	@list;

@@ -1,0 +1,3 @@
+:0{isa=>,cond=>,preaction=>,action=>}:	# base construct #
+:1{isa=>|<0>|,cond<int>=>}:	# execute N times #
+:2{isa=>|<0>|,cond<result>=>}:	# execute until receiving a given result #

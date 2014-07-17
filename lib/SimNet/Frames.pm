@@ -73,7 +73,7 @@ class SimNet::Frame {
 		my regex id { \d+ };
 		my regex frameref { '|<'\d+'>|' };
 		my regex valid { :i <[a..z]+[0..9]>+ };
-		my regex pair { <&valid>'=>'(<&frameref>|<&valid>)? };
+		my regex pair { <&valid>('<'<&valid>'>')?'=>'(<&frameref>|<&valid>)? };
 		my $id = +(($frame ~~ m/<&id>/).Str);
 		$.id = $id;
 		my @pairs = (m:g/<&pair>/ given $frame)>>.Str;
